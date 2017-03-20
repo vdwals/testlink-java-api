@@ -47,9 +47,10 @@ public enum TestImportance {
         return Integer.toString(this.value);
     }
 
-    /**
-     * Get value of test importance
-     * @return value of test importance
+    /*
+     * (non-Javadoc)
+     * 
+     * @see br.eti.kinoshita.testlinkjavaapi.model.IntegerValueEnum#getValue()
      */
     public Integer getValue() {
         return this.value;

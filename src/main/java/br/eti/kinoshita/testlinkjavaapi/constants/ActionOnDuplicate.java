@@ -38,10 +38,6 @@ public enum ActionOnDuplicate {
         this.value = value;
     }
 
-    /**
-     * Return the action value.
-     * @return action value
-     */
     public String getValue() {
         return this.value;
     }

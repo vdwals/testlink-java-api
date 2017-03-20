@@ -24,6 +24,7 @@
 package br.eti.kinoshita.testlinkjavaapi;
 
 import java.net.URL;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
@@ -36,11 +37,11 @@ import org.apache.commons.configuration2.builder.fluent.Parameters;
 import org.apache.commons.configuration2.convert.DefaultListDelimiterHandler;
 import org.apache.commons.configuration2.ex.ConfigurationException;
 import org.apache.commons.configuration2.ex.ConversionException;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.apache.xmlrpc.XmlRpcException;
 import org.apache.xmlrpc.client.XmlRpcClient;
 import org.apache.xmlrpc.client.XmlRpcClientConfigImpl;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import br.eti.kinoshita.testlinkjavaapi.constants.ActionOnDuplicate;
 import br.eti.kinoshita.testlinkjavaapi.constants.ExecutionStatus;
@@ -92,7 +93,7 @@ public class TestLinkAPI {
     private final RequirementService requirementService;
     private final ReqSpecService reqSpecService;
 
-    private static final Logger LOG = LogManager.getLogger(TestLinkAPI.class);
+    private static final Logger LOG = LoggerFactory.getLogger(TestLinkAPI.class);
 
     /**
      * XML-RPC client.
@@ -542,6 +543,7 @@ public class TestLinkAPI {
      * @return Test Plan.
      * @throws TestLinkAPIException if the service returns an error
      * @since 1.0
+     * @return Test plan
      */
     public TestPlan getTestPlanByName(String planName, String projectName) throws TestLinkAPIException {
         return this.testPlanService.getTestPlanByName(planName, projectName);
@@ -600,23 +602,8 @@ public class TestLinkAPI {
     /* XX Build operations XX */
 
     /**
-     * Update build custom fields.
-     *
-     * @since 1.9.16-0
-     * @param buildId Build ID
-     * @param testProjectId Test Project ID
-     * @param testPlanId test plan ID
-     * @param customFields Custom Fields name,value pairs
-     * @return Response XML-RPC Response
-     * @throws TestLinkAPIException if the service returns as error
-     */
-    public Map<String, Object> updateBuildCustomFields(Integer buildId, Integer testProjectId, Integer testPlanId, Map<String, String> customFields) throws TestLinkAPIException {
-        return this.buildService.updateBuildCustomFields(buildId, testProjectId, testPlanId, customFields);
-    }
-
-    /**
      * Creates a Build.
-     *
+     * 
      * @param testPlanId test plan ID
      * @param buildName build name
      * @param buildNotes build notes
@@ -661,19 +648,6 @@ public class TestLinkAPI {
 
     /* XX Test Suite operations XX */
 
-    /**
-     * Create a test suite.
-     *
-     * @param testProjectId Test project ID
-     * @param name Test suite name
-     * @param details details
-     * @param parentId Parent ID
-     * @param order order
-     * @param checkDuplicatedName whether to check for duplicated names or not
-     * @param actionOnDuplicatedName action when there is a duplicated name
-     * @return {@link TestSuite}
-     * @throws TestLinkAPIException if it fails to create a test suite
-     */
     public TestSuite createTestSuite(Integer testProjectId, String name, String details, Integer parentId,
             Integer order, Boolean checkDuplicatedName, ActionOnDuplicate actionOnDuplicatedName)
             throws TestLinkAPIException {
@@ -1021,15 +995,16 @@ public class TestLinkAPI {
      * @param platformName platform name
      * @param customFields custom fields
      * @param overwrite flag to overwrite or not
+     * @param execduration Execution duration
      * @return response
      * @throws TestLinkAPIException if the service returns an error
      */
     public ReportTCResultResponse setTestCaseExecutionResult(Integer testCaseId, Integer testCaseExternalId,
             Integer testPlanId, ExecutionStatus status, Integer buildId, String buildName, String notes, Boolean guess,
-            String bugId, Integer platformId, String platformName, Map<String, String> customFields, Boolean overwrite)
+            String bugId, Integer platformId, String platformName, Map<String, String> customFields, Boolean overwrite, Integer execduration)
             throws TestLinkAPIException {
         return this.testCaseService.reportTCResult(testCaseId, testCaseExternalId, testPlanId, status, buildId,
-                buildName, notes, guess, bugId, platformId, platformName, customFields, overwrite);
+                buildName, notes, guess, bugId, platformId, platformName, customFields, overwrite, execduration);
     }
 
     /**
@@ -1234,5 +1209,52 @@ public class TestLinkAPI {
             throws XmlRpcException, TestLinkAPIException {
         return miscService.executeXmlRpcCall(methodName, executionData);
     }
+    
+    /**
+	 * Return an array of attachments of a Test Suite.
+	 * 
+	 * @param testSuiteId
+	 * @return Array of Attachments.
+	 * @throws TestLinkAPIException
+	 * @author dennis@etern-it.de
+	 */
+	public Attachment[] getTestSuiteAttachments(Integer testSuiteId) throws TestLinkAPIException {
+		return this.testSuiteService.getTestSuiteAttachments(testSuiteId);
+	}
+	
+	/**
+	 * Creates a Test Platform.
+	 * 
+	 * @param projectName
+	 *            Test Project name.
+	 * @param platformName
+	 *            Test platform name.
+	 * @param notes
+	 *            Test Plan notes.
+	 * @author dennis@etern-it.de
+	 * @throws TestLinkAPIException
+	 */
+	public Map<String, Object> createPlatform(String projectName, String platformName, String notes)
+			throws TestLinkAPIException {
+		return this.testProjectService.createPlatform(projectName, platformName, notes);
+	}
+	
+	/**
+	 * Retrieves Test Suites for given Ids.
+	 * 
+	 * @param testSuiteId
+	 *            of Test Suite Ids.
+	 * @return Array of Test Suites.
+	 * @throws TestLinkAPIException
+	 * @author dennis@etern-it.de
+	 */
+	public TestSuite getTestSuiteByID(Integer testSuiteId) throws TestLinkAPIException {
+		List<Integer> ts = new LinkedList<>();
+		ts.add(testSuiteId);
+		TestSuite[] testSuiteByID = this.testSuiteService.getTestSuiteByID(ts);
+		if (testSuiteByID != null && testSuiteByID.length == 1)
+			return testSuiteByID[0];
+		return null;
+	}
 
 }

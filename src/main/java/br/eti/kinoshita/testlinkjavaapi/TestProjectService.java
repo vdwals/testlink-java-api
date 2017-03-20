@@ -237,4 +237,17 @@ class TestProjectService extends BaseService {
         }
     }
 
+	public Map<String, Object> createPlatform(String projectName, String platformName, String notes) {
+		try {
+            Map<String, Object> executionData = new HashMap<String, Object>();
+            executionData.put(TestLinkParams.TEST_PROJECT_NAME.toString(), projectName);
+            executionData.put(TestLinkParams.PLATFORM_NAME.toString(), platformName);
+            executionData.put(TestLinkParams.NOTES.toString(), notes);
+            Object response = this.executeXmlRpcCall(TestLinkMethods.CREATE_PLATFORM.toString(), executionData);
+            return Util.castToMap(response);
+        } catch (XmlRpcException xmlrpcex) {
+            throw new TestLinkAPIException("Error retrieving platforms: " + xmlrpcex.getMessage(), xmlrpcex);
+        }
+	}
+
 }
