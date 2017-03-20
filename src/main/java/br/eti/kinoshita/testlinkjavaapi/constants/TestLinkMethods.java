@@ -86,7 +86,9 @@ public enum TestLinkMethods {
     GET_PROJECT_PLATFORMS("tl.getProjectPlatforms"),
     REMOVE_PLATFORM_FROM_TEST_PLAN("tl.removePlatformFromTestPlan"),
     ADD_PLATFORM_TO_TEST_PLAN("tl.addPlatformToTestPlan"),
-    UPDATE_BUILD_CUSTOM_FIELDS("tl.updateBuildCustomFieldsValues")
+    UPDATE_BUILD_CUSTOM_FIELDS("tl.updateBuildCustomFieldsValues"), 
+    GET_TEST_SUITE_ATTACHMENTS("tl.getTestSuiteAttachments"), 
+    CREATE_PLATFORM("tl.createPlatform")
     ;
 
     private String value;

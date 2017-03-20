@@ -114,7 +114,8 @@ public enum TestLinkParams {
     TITLE("title"),
     URGENCY("urgency"),
     USER("user"),
-    VERSION("version");
+    VERSION("version"), 
+    EXECUTION_DURATION("execduration");
 
     private String value;
 
